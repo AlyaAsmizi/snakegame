@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Easy Level</title>
+	<link rel="icon" href="images/snake.png" type="images/png">
+    <style>
+		@import url('https://fonts.googleapis.com/css2?family=Righteous&display=swap');
+		@import url('https://fonts.googleapis.com/css2?family=League+Spartan:wght@100..900&family=Righteous&display=swap');
+        body {
+            font-family: "League Spartan", sans-serif;
+			font-optical-sizing: auto;
+			font-weight: 400;
+			font-style: normal;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+            background-image: url('images/wall.png');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            color: #333;
+        }
+        h1 {
+			font-family: "Righteous", sans-serif;
+			font-weight: 400;
+			font-style: normal;
+            font-size: 3.2em;
+            color: #1A311A;
+            text-align: center;
+            margin-bottom: 10px;
+			text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+        }
+        .container {
+            background-color: #A1C5C4; /*#FDDCC7*/
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+            text-align: center;
+        }
+		#scoreBoard {
+			display: flex;
+			justify-content: space-around;
+			margin: 20px 0;
+			font-size: 18px;
+		}
+		#scoreBoard p {
+			margin: 0;
+		}
+		#scoreBoard span {
+			font-weight: bold;
+			margin-left: 5px;
+		}
+        #questionBoard{
+            margin: 20px 0;
+        }
+		#mathQuestion {
+			font-size: 25px;
+			padding-top: 20px;
+			color: #1A311A;
+		}
+        #gameCanvas {
+            border: 2px solid #333;
+            background-color: #fff;
+            width: 600px;
+            height: 400px;
+        }
+        button {
+			font-family: "Righteous", sans-serif;
+			font-weight: 400;
+			font-style: normal;
+			font-size: 20px;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            background-color: #5F5C59;
+            color: #fff;
+            cursor: pointer;
+            margin: 5px;
+            transition: background-color 0.3s ease;
+        }
+        button:hover {
+            background-color: #218838;
+        }
+        .hidden {
+            display: none;
+        }
+        #gameOver {
+            display: none;
+            text-align: center;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: rgba(0, 0, 0, 0.8);
+            color: #fff;
+            padding: 30px;
+            border-radius: 10px;
+        }
+        #gameOver p {
+            font-size: 28px;
+        }
+		#settingsButton {
+            position: absolute;
+            top: 50px;
+            right: 70px;
+            background: url('images/settings.png') no-repeat center center;
+            background-size: contain;
+            width: 60px;
+            height: 60px;
+            border: none;
+            cursor: pointer;
+			animation: rotate 4s linear infinite;
+        }
+		@keyframes rotate {
+            0% {
+                transform: rotate(0deg);
+            }
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+        #settingsContainer {
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            position: absolute;
+            top: 60px;
+            right: 40px;
+            background-color: #fff;
+            padding: 10px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            transition: max-height 0.5s ease;
+        }
+		#settingsContainer.show {
+            display: flex;
+            max-height: 200px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Easy MathSnake</h1>
+    <div class="container">
+        <div id="scoreBoard">
+            <p>Player: <span id="playerName"></span></p>
+            <p>Current Score: <span id="currentScore">0</span></p>
+			<p>High Score: <span id="highScore">0</span></p>
+        </div>
+        <div id="questionBoard">
+            <p id="mathQuestion"></p>
+        </div>
+        <canvas id="gameCanvas" width="600" height="600"></canvas>
+        <div id="settings">
+            <button id="settingsButton"></button>
+            <div id="settingsContainer">
+                <button id="pauseButton">Pause</button>
+                <button id="soundButton">Sound On</button>
+				<input type="range" id="volumeControl" min="0" max="1" step="0.1" value="1">
+            </div>
+        </div>
+        <div id="gameOver">
+            <p>Game Over!</p>
+            <button id="playAgainButton">Play Again</button>
+            <button id="exitButton">Exit</button>
+        </div>
+    </div>
+	
+	<audio id="gameSound" src="images/sound.wav" loop></audio>
+
+    <script>
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+        const playerName = localStorage.getItem('playerName') || 'Player';
+        document.getElementById('playerName').innerText = playerName;
+
+        const highScoreElement = document.getElementById('highScore');
+        const currentScoreElement = document.getElementById('currentScore');
+        const mathQuestionElement = document.getElementById('mathQuestion');
+        const gameOverElement = document.getElementById('gameOver');
+        const playAgainButton = document.getElementById('playAgainButton');
+        const exitButton = document.getElementById('exitButton');
+        const pauseButton = document.getElementById('pauseButton');
+        const soundButton = document.getElementById('soundButton');
+        const settingsButton = document.getElementById('settingsButton');
+        const settingsContainer = document.getElementById('settingsContainer');
+
+        let highScore = localStorage.getItem('highScore') || 0;
+        highScoreElement.innerText = highScore;
+
+        let currentScore = 0;
+        let gamePaused = false;
+        let soundOn = true;
+
+        const snake = [{x: 300, y: 300}];
+        let dx = 20;
+        let dy = 0;
+        let correctAnswerPosition;
+        let wrongAnswerPosition;
+        let correctAnswer;
+        let wrongAnswer;
+        let gameInterval;
+
+        function startGame() {
+            gameInterval = setInterval(updateGame, 300);
+            generateQuestion();
+        }
+
+        function updateGame() {
+            if (gamePaused) return;
+
+            const head = {x: snake[0].x + dx, y: snake[0].y + dy};
+
+            if (head.x === correctAnswerPosition.x && head.y === correctAnswerPosition.y) {
+                currentScore += 20;
+                currentScoreElement.innerText = currentScore;
+                generateQuestion();
+            } else if (head.x === wrongAnswerPosition.x && head.y === wrongAnswerPosition.y) {
+                gameOver();
+                return;
+            } else {
+                snake.pop();
+            }
+
+            snake.unshift(head);
+
+            if (checkCollision(head)) {
+                gameOver();
+                return;
+            }
+
+            drawGame();
+        }
+
+        function drawGame() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            ctx.fillStyle = 'green';
+            snake.forEach(part => ctx.fillRect(part.x, part.y, 20, 20));
+
+            ctx.fillStyle = 'white';
+            ctx.fillRect(correctAnswerPosition.x, correctAnswerPosition.y, 20, 20);
+            ctx.fillRect(wrongAnswerPosition.x, wrongAnswerPosition.y, 20, 20);
+
+            ctx.fillStyle = 'black';
+            ctx.font = '20px "League Spartan", sans-serif';
+			ctx.textAlign = 'center';
+			ctx.textBaseline = 'middle';
+            ctx.fillText(correctAnswer, correctAnswerPosition.x + 3, correctAnswerPosition.y + 16);
+            ctx.fillText(wrongAnswer, wrongAnswerPosition.x + 3, wrongAnswerPosition.y + 16);
+        }
+
+        function spawnPosition() {
+            return {
+                x: Math.floor(Math.random() * 30) * 20,
+                y: Math.floor(Math.random() * 30) * 20
+            };
+        }
+
+        function checkCollision(part) {
+            return part.x < 0 || part.y < 0 || part.x >= canvas.width || part.y >= canvas.height ||
+                   snake.slice(1).some(s => s.x === part.x && s.y === part.y);
+        }
+
+        function resetGame() {
+            snake.length = 1;
+            snake[0].x = 300;
+            snake[0].y = 300;
+            dx = 20;
+            dy = 0;
+            currentScore = 0;
+            currentScoreElement.innerText = currentScore;
+            gameOverElement.style.display = 'none';
+            startGame();
+        }
+
+        function generateQuestion() {
+            const num1 = Math.floor(Math.random() * 10);
+            const num2 = Math.floor(Math.random() * 10);
+            correctAnswer = num1 + num2;
+            wrongAnswer = correctAnswer + Math.floor(Math.random() * 3 + 1);
+
+            correctAnswerPosition = spawnPosition();
+            wrongAnswerPosition = spawnPosition();
+
+            while (correctAnswerPosition.x === wrongAnswerPosition.x && correctAnswerPosition.y === wrongAnswerPosition.y) {
+                wrongAnswerPosition = spawnPosition();
+            }
+
+            mathQuestionElement.innerText = `What is ${num1} + ${num2}?`;
+        }
+
+        function gameOver() {
+            clearInterval(gameInterval);
+            if (currentScore > highScore) {
+                highScore = currentScore;
+                localStorage.setItem('highScore', highScore);
+                highScoreElement.innerText = highScore;
+            }
+            gameOverElement.style.display = 'block';
+			localStorage.setItem('finalScore', currentScore); // Save final score	
+        }
+
+        document.addEventListener('keydown', (event) => {
+            switch (event.key) {
+                case 'ArrowUp':
+                    if (dy === 0) {
+                        dx = 0;
+                        dy = -20;
+                    }
+                    break;
+                case 'ArrowDown':
+                    if (dy === 0) {
+                        dx = 0;
+                        dy = 20;
+                    }
+                    break;
+                case 'ArrowLeft':
+                    if (dx === 0) {
+                        dx = -20;
+                        dy = 0;
+                    }
+                    break;
+                case 'ArrowRight':
+                    if (dx === 0) {
+                        dx = 20;
+                        dy = 0;
+                    }
+                    break;
+            }
+        });
+
+        playAgainButton.addEventListener('click', resetGame);
+        exitButton.addEventListener('click', () => window.location.href = 'exit.html');
+
+        pauseButton.addEventListener('click', () => {
+            gamePaused = !gamePaused;
+            pauseButton.innerText = gamePaused ? 'Resume' : 'Pause';
+        });
+
+        soundButton.addEventListener('click', () => {
+            soundOn = !soundOn;
+            if (soundOn) {
+                soundButton.innerText = 'Sound On';
+                gameSound.play();
+            } else {
+                soundButton.innerText = 'Sound Off';
+                gameSound.pause();
+            }
+        });
+		
+		volumeControl.addEventListener('input', () => {
+            gameSound.volume = volumeControl.value;
+        });
+
+        settingsButton.addEventListener('click', () => {
+            settingsContainer.style.display = settingsContainer.style.display === 'none' ? 'flex' : 'none';
+        });
+
+        startGame();
+    </script>
+</body>
+</html>

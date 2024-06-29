@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MathSnake</title>
+	<link rel="icon" href="images/snake.png" type="image/png">
+    <style>
+		@import url('https://fonts.googleapis.com/css2?family=Righteous&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=League+Spartan:wght@100..900&family=Righteous&display=swap');
+		body {
+			font-family: "League Spartan", sans-serif;
+			font-optical-sizing: auto;
+			font-weight: 400;
+			font-style: normal;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-image: url('images/bg.png');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            color: #f0f0f0;
+        }
+		h1 {
+			font-family: "Righteous", sans-serif;
+			font-weight: 400;
+			font-style: normal;
+			font-size: 4.8rem;
+			color: #C6DFDE;
+			text-align: center;
+			margin-top: 5px;
+			margin-bottom: 10px;
+			text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+		}
+        .container {
+            text-align: center;
+            background-color: #1A311A;
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+            max-width: 400px;
+            width: 100%;
+        }
+		h3 {
+			font-size: 2rem;
+			margin-top: 10px;
+			margin-bottom: 10px;
+		}
+        p {
+            font-size: 1.2em;
+			margin-top: 5px;
+            margin-bottom: 10px;
+        }
+        input[type="text"] {
+			text-align: center;
+            width: 300px;
+            padding: 12px;
+            margin: 10px 0;
+            box-sizing: border-box;
+            border: 1px solid #E7E7E7;
+            border-radius: 5px;
+            background-color: #E7E7E7;
+            color: #f0f0f0;
+            font-size: 1.2em;
+			font-family: "League Spartan", sans-serif;
+			font-optical-sizing: auto;
+			font-weight: 400;
+			font-style: normal;
+        }
+		.level {
+			margin-top: 20px;
+			font-size: 1.5rem;
+		}
+        .difficulty-level {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+        label {
+            margin-right: 20px;
+            font-size: 18px;
+        }
+        input[type="radio"] {
+			cursor: pointer;
+            margin-right: 5px;
+			margin-bottom: 10px;
+        }
+        .start {
+			font-family: "Righteous", sans-serif;
+			font-weight: 400;
+			font-style: normal;
+			font-size: 25px;
+			display: block;;
+            margin-bottom: 10px;
+			margin-left: 110px;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 20px;
+            background-color: #FA9876;
+            color: #fff;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        .start:hover {
+            background-color: #B6B6B6;
+        }
+		.small {
+			font-family: "Righteous", sans-serif;
+			font-weight: 400;
+			font-style: normal;
+			font-size: 20px;
+			margin-left: 124px;
+            padding: 12px 20px;
+            display: block;;
+			border: none;
+            border-radius: 20px;
+            background-color: #FA9876;
+			color: #fff;
+            cursor: pointer;
+			transition: background-color 0.3s;
+        }
+        .small:hover {
+            background-color: #B6B6B6;
+        }
+		#instruction {
+			display: none;
+            position: fixed;
+            z-index: 1;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0, 0, 0, 0.4);
+		}
+		.content {
+			background-color: rgba(0, 0, 0, 0.8);
+            margin: 15% auto;
+            padding: 20px;
+            border: none;
+            width: 80%;
+            max-width: 460px;
+            border-radius: 10px;
+            text-align: left;
+		}
+		.content h2 {
+			margin-bottom: 5px;
+		}
+		.content li {
+			font-size: 18px;
+		}
+		.close {
+            color: #aaa;
+            float: right;
+            font-size: 30px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        .close:hover,
+        .close:focus {
+            color: black;
+            text-decoration: none;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <h1>MathSnake</h1>
+    <div class="container">
+		<h3>Welcome!</h3>
+        <p>Please enter your name to start the game:</p>
+        <input type="text" id="playerName" placeholder="Enter your name"><br>
+        <p class=level >Select difficulty level:</p>
+        <div class="difficulty-level">
+            <label><input type="radio" name="difficulty" value="easy" checked> Easy</label>
+            <label><input type="radio" name="difficulty" value="medium"> Medium</label>
+            <label><input type="radio" name="difficulty" value="hard"> Hard</label>
+        </div>
+		<div class="button">
+			<button class="start" onclick="startGame()">Start Game</button>
+			<button class="small" onclick="showInstructions()">How to Play</button>
+		</div>
+    </div>
+	
+	<div id="instruction">
+        <div class="content">
+            <span class="close" onclick="closeInstructions()">&times;</span>
+            <h2>Welcome to MathSnake!</h2>
+            <p>Here's how to play:</p>
+            <ul>
+                <li>Use the arrow keys to move the snake around the board.</li>
+                <li>Solve math questions correctly to grow your snake.</li>
+                <li>Avoid wrong answers, as they will end the game.</li>
+                <li>Choose your difficulty level for a greater challenge!</li>
+                <li>Good luck and have fun!</li>
+            </ul>
+        </div>
+    </div>
+
+    
+    <script>
+        function startGame() {
+            const playerName = document.getElementById('playerName').value;
+            const difficulty = document.querySelector('input[name="difficulty"]:checked').value;
+            if (playerName) {
+                // Save the player's name and difficulty level
+                localStorage.setItem('playerName', playerName);
+                localStorage.setItem('difficulty', difficulty);
+                // Redirect to the appropriate game page based on difficulty
+                let gamePage = '';
+                switch (difficulty) {
+                    case 'easy':
+                        gamePage = 'easysnake.html';
+                        break;
+                    case 'medium':
+                        gamePage = 'mediumsnake.html';
+                        break;
+                    case 'hard':
+                        gamePage = 'hardsnake.html';
+                        break;
+                }
+                window.location.href = gamePage;
+            } else {
+                alert('Please enter your name to start the game.');
+            }
+        }
+		
+		function showInstructions() {
+            document.getElementById('instruction').style.display = 'block';
+        }
+
+        function closeInstructions() {
+            document.getElementById('instruction').style.display = 'none';
+        }
+
+        window.onclick = function(event) {
+            const modal = document.getElementById('instruction');
+            if (event.target === modal) {
+                modal.style.display = 'none';
+            }
+        }
+    </script>
+</body>
+</html>
+
+

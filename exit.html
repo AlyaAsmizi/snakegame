@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Game Over</title>
+	<link rel="icon" href="images/snake.png" type="images/png">
+    <style>
+		@import url('https://fonts.googleapis.com/css2?family=Righteous&display=swap');
+		@import url('https://fonts.googleapis.com/css2?family=League+Spartan:wght@100..900&family=Righteous&display=swap');
+        body {
+            font-family: "League Spartan", sans-serif;
+			font-optical-sizing: auto;
+			font-weight: 400;
+			font-style: normal;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+            background-image: url('images/exit.png');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+        }
+		h1 {
+			font-family: "Righteous", sans-serif;
+			font-weight: 400;
+			font-style: normal;
+			font-size: 4.8rem;
+			color: #C6DFDE;
+			text-align: center;
+			margin-top: 5px;
+			margin-bottom: 10px;
+			text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+		}
+		#container {
+            text-align: center;
+            background-color: #1A311A;
+            padding: 26px;
+            border-radius: 15px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+            max-width: 400px;
+            width: 100%;
+		}
+        #finalScoreBoard {
+			color: #fff;
+            text-align: center;
+            margin: 20px;
+        }
+		h2 {
+			font-size: 2.2rem;
+		}
+		p {
+			font-size: 1.6rem;
+		}
+        button {
+			font-family: "Righteous", sans-serif;
+			font-weight: 400;
+			font-style: normal;
+			font-size: 22px;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 20px;
+            background-color: #FA9876;
+            color: #fff;
+            font-size: 20px;
+            cursor: pointer;
+            margin: 5px;
+			transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: #B6B6B6;
+        }
+    </style>
+</head>
+<body>
+	<h1>MathSnake</h1>
+	<div id="container">
+		<div id="finalScoreBoard">
+			<h2>Game Over :(</h2>
+			<p>Player: <span id="playerName"></span></p>
+			<p>Final Score: <span id="finalScore">0</span></p>
+			<button onclick="goToMainPage()">Main Page</button>
+		</div>
+	</div>
+
+    <script>
+        // Get the final score and player name from localStorage or sessionStorage
+        const finalScore = localStorage.getItem('finalScore') || 0;
+        const playerName = localStorage.getItem('playerName') || 'Player';
+        
+        document.getElementById('finalScore').innerText = finalScore;
+        document.getElementById('playerName').innerText = playerName;
+
+        function goToMainPage() {
+            window.location.href = 'start.html';
+        }
+    </script>
+</body>
+</html>
